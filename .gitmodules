@@ -1,0 +1,3 @@
+[submodule "node_crud_for_terraform"]
+	path = node_crud_for_terraform
+	url = https://github.com/kalaikurtis007/node_crud_for_terraform.git
