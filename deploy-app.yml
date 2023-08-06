@@ -1,0 +1,44 @@
+---
+- hosts: ec2_instances
+  become: true
+  tasks:
+    - name: Update yum cache
+      yum:
+        update_cache: yes
+
+    - name: Install pkgs
+      yum:
+        name:
+          - git
+          - docker
+          - python
+        state: present
+
+    - name: Enable docker.service
+      systemd:
+        name: docker.service
+        daemon_reload: true
+        enabled: true
+
+    - name: Ensure docker deamon is running
+      service:
+        name: docker
+        state: started
+      become: true
+
+    - name: Enable containerd.service
+      systemd:
+        name: containerd.service
+        daemon_reload: true
+        enabled: true
+
+    - name: Clone Node.js app repository
+      git:
+        repo: https://github.com/kalaikurtis007/node_crud_for_terraform.git
+        dest: /var/www/html/nodejs-demo
+
+    - name: Build Docker image
+      command: docker build -t node-app /var/www/html/nodejs-demo
+
+    - name: Run Docker container
+      command: docker run -d -p 3000:3000 --name node-app-container node-app
